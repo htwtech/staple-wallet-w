@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { useLogin, usePrivy, type PrivyErrorCode } from '@privy-io/react-auth'
+import { useLogin, usePrivy } from '@privy-io/react-auth'
 import { OnboardStrategy } from 'starkzap'
 import type { NetworkId, TokenConfig } from '../config/networks'
 import { NETWORKS } from '../config/networks'
@@ -89,10 +89,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [currentNetwork],
   )
 
-  const handleLoginError = useCallback((error: PrivyErrorCode) => {
+  const handleLoginError = useCallback((error: unknown) => {
     console.error('Privy login error', error)
     setStatus('error')
-    setError(String(error))
+    setError(error != null ? String(error) : 'Ошибка входа')
   }, [])
 
   const openLoginModal = useLogin({
@@ -109,7 +109,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setError('Не удалось подключить кошелек')
       }
     },
-    onError: handleLoginError,
+    onError: handleLoginError as (error: import('@privy-io/react-auth').PrivyErrorCode) => void,
   }).login
 
   const login = useCallback(async () => {
