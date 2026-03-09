@@ -89,6 +89,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [currentNetwork],
   )
 
+  const handleLoginError = useCallback((error: PrivyErrorCode) => {
+    console.error('Privy login error', error)
+    setStatus('error')
+    setError(String(error))
+  }, [])
+
   const openLoginModal = useLogin({
     onComplete: async () => {
       setStatus('connecting')
@@ -103,11 +109,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setError('Не удалось подключить кошелек')
       }
     },
-    onError: (error: PrivyErrorCode) => {
-      console.error('Privy login error', error)
-      setStatus('error')
-      setError(String(error))
-    },
+    onError: handleLoginError,
   }).login
 
   const login = useCallback(async () => {
